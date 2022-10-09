@@ -9,6 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r load_library, echo=FALSE, message=FALSE}
 library(tidyverse)
+library(p8105.datasets)
 ```
 
 # Problem 2
@@ -36,6 +37,31 @@ day_df = acce_df %>%
   summarize(
     day_activity = as.integer(sum(activity_counts))
   )
+
+```
+The dataframe after cleaning processes has `r ncol(acce_df)` variables and `r nrow(acce_df)` observations. It includes the week and day variables with an indication of either weekday or weekend. Each one minute interval is turned into a variable named activity_number and activity_counts is the new variable for original activity data.
+
+```{r show_table, echo=FALSE, message=FALSE}
 knitr::kable(day_df)
 ```
 
+
+# Problem 3
+```{r load_file_2, echo=FALSE, message=FALSE}
+data("ny_noaa")
+```
+The raw dataframe of ny_noaa has `r ncol(ny_noaa)` variables and `r nrow(ny_noaa)` observations. It has weather station id, date of observation, precipitation, snowfall, snow depth, and maximum and minimum temperatures. For data of precipitation, snowfall, and snow depth, there are `r sum(is.na(ny_noaa$prcp))`, `r sum(is.na(ny_noaa$snow))`, `r sum(is.na(ny_noaa$snwd))` missing values. For tmax and tmin, all of the observations are missing, which generates no helpful information for further analysis. 
+```{r clean_file_2, echo=FALSE, message=FALSE}
+noaa_df = ny_noaa %>% 
+  separate(date, into = c("year", "month", "day"), sep = '-') %>% 
+  rename(c("prcp_mm" = "prcp", "snow_mm" = "snow", "snwd_mm" = "snwd"))
+
+clean_snow = na.omit(noaa_df$snow_mm)
+find_mode = function(v) {
+ uniqv = unique(v)
+ uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+mode_snow = find_mode(clean_snow)
+```
+1. While most of the observations for snowfall are missing, `r mode_snow` mm is the most commonly seen value in the remaining observation. It is reasonable because snowfall is an occasional event in that area and no snow should be observed in normal days.
