@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r load_library, echo=FALSE, message=FALSE}
 library(tidyverse)
 library(p8105.datasets)
+library(patchwork)
+library(ggridges)
 ```
 
 # Problem 2
@@ -43,6 +45,8 @@ The dataframe after cleaning processes has `r ncol(acce_df)` variables and `r nr
 
 ```{r show_table, echo=FALSE, message=FALSE}
 knitr::kable(day_df)
+day_df %>% 
+  ggplot(aes(x=day_id, y=day_activity, color = week)) + geom_point() + geom_line()
 ```
 
 
@@ -50,7 +54,7 @@ knitr::kable(day_df)
 ```{r load_file_2, echo=FALSE, message=FALSE}
 data("ny_noaa")
 ```
-The raw dataframe of ny_noaa has `r ncol(ny_noaa)` variables and `r nrow(ny_noaa)` observations. It has weather station id, date of observation, precipitation, snowfall, snow depth, and maximum and minimum temperatures. For data of precipitation, snowfall, and snow depth, there are `r sum(is.na(ny_noaa$prcp))`, `r sum(is.na(ny_noaa$snow))`, `r sum(is.na(ny_noaa$snwd))` missing values. For tmax and tmin, all of the observations are missing, which generates no helpful information for further analysis. 
+The raw dataframe of ny_noaa has `r ncol(ny_noaa)` variables and `r nrow(ny_noaa)` observations. It has weather station id, date of observation, precipitation, snowfall, snow depth, and maximum and minimum temperatures. For data of precipitation, snowfall, and snow depth, there are `r sum(is.na(ny_noaa$prcp))`, `r sum(is.na(ny_noaa$snow))`, `r sum(is.na(ny_noaa$snwd))` missing values. For tmax and tmin, `r sum(is.na(ny_noaa$tmax))` and `r sum(is.na(ny_noaa$tmin))` of the observations are missing, which loss about a half of helpful information for further analysis. 
 ```{r clean_file_2, echo=FALSE, message=FALSE}
 noaa_df = ny_noaa %>% 
   separate(date, into = c("year", "month", "day"), sep = '-') %>% 
@@ -62,6 +66,39 @@ find_mode = function(v) {
  uniqv[which.max(tabulate(match(v, uniqv)))]
 }
 
-mode_snow = find_mode(clean_snow)
 ```
-1. While most of the observations for snowfall are missing, `r mode_snow` mm is the most commonly seen value in the remaining observation. It is reasonable because snowfall is an occasional event in that area and no snow should be observed in normal days.
+1. While most of the observations for snowfall are missing, `r find_mode(clean_snow)` mm is the most commonly seen value in the remaining observation. It is reasonable because snowfall is an occasional event in that area and no snow should be observed in normal days.
+```{r df_for_plot, echo=FALSE, message=FALSE}
+jan_tmax = noaa_df %>% 
+  filter( month == "01") %>% 
+  select(id, year, tmax) %>% 
+  na.omit() %>% 
+  mutate(
+    tmax = as.numeric(tmax),
+    year = as.numeric(year)
+    ) %>%
+  group_by(id, year) %>% 
+  summarize(
+    mean_tmax_jan = mean(tmax)
+  )
+
+july_tmax = noaa_df %>% 
+  filter( month == "07") %>% 
+  select(id, year, tmax) %>% 
+  na.omit() %>% 
+  mutate(
+    tmax = as.numeric(tmax),
+    year = as.numeric(year)
+    ) %>% 
+  group_by(id, year) %>% 
+  summarize(
+    mean_tmax_july = mean(tmax)
+  )
+
+```
+```{r plots, echo=FALSE, message=FALSE}
+jan_tmax %>% 
+  ggplot(aes(x=year, y=mean_tmax_jan)) + geom_point()
+```
+
+
