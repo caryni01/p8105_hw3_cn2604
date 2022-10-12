@@ -25,6 +25,7 @@ acce_df = read.csv("./data/accel_data.csv") %>%
     values_to = "activity_counts"
   ) %>% 
   mutate(
+    activity_number = as.numeric(activity_number),
     week_type = factor(case_when(
       day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday") ~ "weekday",
       day %in% c("Saturday", "Sunday") ~ "weekend",
@@ -35,9 +36,9 @@ acce_df = read.csv("./data/accel_data.csv") %>%
   )
 
 day_df = acce_df %>% 
-  group_by(week, day_id) %>% 
+  group_by(week, day) %>% 
   summarize(
-    day_activity = as.integer(sum(activity_counts))
+    total_activity = as.integer(sum(activity_counts))
   )
 
 ```
@@ -45,10 +46,32 @@ The dataframe after cleaning processes has `r ncol(acce_df)` variables and `r nr
 
 ```{r show_table, echo=FALSE, message=FALSE}
 knitr::kable(day_df)
-day_df %>% 
-  ggplot(aes(x=day_id, y=day_activity, color = week)) + geom_point() + geom_line()
+ggplot(day_df, aes(x = day, y = total_activity, fill = week)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Heart activity by week type",
+    x = "Day of the week",
+    y = "Total activity",
+    caption = "Data from P8105 HW3")
 ```
+No apparent trend could be found by the table but the bar plot above suggests that Saturday has least total activity compared to other days of the week.
 
+```{r plot_heart_activity, echo=FALSE, message=FALSE}
+acce_df %>% 
+  ggplot(aes(x=activity_number, y=activity_counts, color = day)) + 
+  geom_point(alpha = .5) + 
+  scale_x_continuous(
+    breaks = seq(0, 1440, 120),
+    labels = c("0", "2:00", "4:00", "6:00","8:00","10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "24:00")
+  ) +
+  scale_color_hue(name = "Day of the week", h = c(300, 0)) +
+  labs(
+    title = "Heart activity plot",
+    x = "Hours of a day",
+    y = "Number of activity counts",
+    caption = "Data from P8105 HW3")
+```
+The graph shows that the heart activity rates are highest between 10am to 12pm and 8pm to 10pm throughout the week. The patient seems to have more stable heart activity in Tuesday and Wednesday though he has reached his highest activity rate in Wednesday, which exceeds 7500 activity counts per minute. Overall, the patient maintains an activity rate way below 2500 per minute in most time of a day. 
 
 # Problem 3
 ```{r load_file_2, echo=FALSE, message=FALSE}
@@ -58,7 +81,11 @@ The raw dataframe of ny_noaa has `r ncol(ny_noaa)` variables and `r nrow(ny_noaa
 ```{r clean_file_2, echo=FALSE, message=FALSE}
 noaa_df = ny_noaa %>% 
   separate(date, into = c("year", "month", "day"), sep = '-') %>% 
-  rename(c("prcp_mm" = "prcp", "snow_mm" = "snow", "snwd_mm" = "snwd"))
+  rename(c("prcp_mm" = "prcp", "snow_mm" = "snow", "snwd_mm" = "snwd")) %>% 
+  mutate(
+    tmax = as.numeric(tmax),
+    tmin = as.numeric(tmin)
+  )
 
 clean_snow = na.omit(noaa_df$snow_mm)
 find_mode = function(v) {
@@ -74,7 +101,6 @@ jan_tmax = noaa_df %>%
   select(id, year, tmax) %>% 
   na.omit() %>% 
   mutate(
-    tmax = as.numeric(tmax),
     year = as.numeric(year)
     ) %>%
   group_by(id, year) %>% 
@@ -87,7 +113,6 @@ july_tmax = noaa_df %>%
   select(id, year, tmax) %>% 
   na.omit() %>% 
   mutate(
-    tmax = as.numeric(tmax),
     year = as.numeric(year)
     ) %>% 
   group_by(id, year) %>% 
@@ -97,8 +122,44 @@ july_tmax = noaa_df %>%
 
 ```
 ```{r plots, echo=FALSE, message=FALSE}
-jan_tmax %>% 
-  ggplot(aes(x=year, y=mean_tmax_jan)) + geom_point()
+jan_tmax_p = 
+  jan_tmax %>% 
+  ggplot(aes(x=id, y=mean_tmax_jan)) + 
+  geom_point(aes(color = year))  + 
+  scale_colour_gradient(low = 'white', high = 'blue') +
+  labs(
+    title = "Maximum temperature in Jan",
+    x = "Weather station id",
+    y = "Temperature degree (°C)",
+    caption = "Data from P8105 datasets")
+
+july_tmax_p = 
+  july_tmax %>% 
+  ggplot(aes(x=id, y=mean_tmax_july)) + 
+  geom_point(aes(color = year))  + 
+  scale_colour_gradient(low = 'white', high = 'red') +
+  labs(
+    title = "Maximum temperature in July",
+    x = "Weather station id",
+    y = "Temperature degree (°C)",
+    caption = "Data from P8105 datasets")
+
+jan_tmax_p + july_tmax_p
+```
+The scatterplots for maximum temperatures shows that most of the observed maximum temperature in January across all weather station is between -50 to 50 degree Celsius while the range is between 250 to 300 degree Celsius in July. Though outliers are hard to be visualized by the scatterplots above, they can be found by the boxplots in the below marked in blue and red.
+
+```{r boxplots, echo=FALSE, message=FALSE}
+jan_tmax_box = 
+  jan_tmax %>% 
+  ggplot(aes(x=id, y=mean_tmax_jan)) +
+  geom_boxplot(outlier.colour = "blue") 
+
+july_tmax_box =
+  july_tmax %>% 
+  ggplot(aes(x=id, y=mean_tmax_july)) +
+  geom_boxplot(outlier.colour = "red") 
+
+jan_tmax_box + july_tmax_box
 ```
 
 
