@@ -146,7 +146,7 @@ july_tmax_p =
 
 jan_tmax_p + july_tmax_p
 ```
-The scatterplots for maximum temperatures shows that most of the observed maximum temperature in January across all weather station is between -50 to 50 degree Celsius while the range is between 250 to 300 degree Celsius in July. Though outliers are hard to be visualized by the scatterplots above, they can be found by the boxplots in the below marked in blue and red.
+2. The scatterplots for maximum temperatures shows that most of the observed maximum temperature in January across all weather station is between -50 to 50 degree Celsius while the range is between 250 to 300 degree Celsius in July. Though outliers are hard to be visualized by the scatterplots above, they can be found by the boxplots in the below marked in blue and red.
 
 ```{r boxplots, echo=FALSE, message=FALSE}
 jan_tmax_box = 
@@ -160,6 +160,30 @@ july_tmax_box =
   geom_boxplot(outlier.colour = "red") 
 
 jan_tmax_box + july_tmax_box
+```
+```{r question_3, echo=FALSE, message=FALSE}
+tmax_tmin = 
+  noaa_df %>% 
+  ggplot(aes(x=tmax, y=tmin)) + 
+  geom_point(aes(color=year)) +
+  labs(
+    title = "Maximum temperature versus minimum temperature",
+    x = "Maximum temperature (°C)",
+    y = "Minimum temperature (°C)",
+    caption = "Data from P8105 datasets")
+
+snow_den =
+  noaa_df %>% 
+  filter(snow_mm > 0 & snow_mm < 100) %>% 
+  ggplot(aes(x=snow_mm, color = year)) +
+  geom_density(alpha=.5) +
+  labs(
+    title = "Snowfall distribution across years",
+    x = "Snowfall (mm)",
+    y = "Density",
+    caption = "Data from P8105 datasets")
+
+tmax_tmin / snow_den
 ```
 
 
