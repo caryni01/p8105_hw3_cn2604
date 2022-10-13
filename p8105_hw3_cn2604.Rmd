@@ -124,53 +124,43 @@ july_tmax = noaa_df %>%
 ```{r plots, echo=FALSE, message=FALSE}
 jan_tmax_p = 
   jan_tmax %>% 
-  ggplot(aes(x=id, y=mean_tmax_jan)) + 
-  geom_point(aes(color = year))  + 
-  scale_colour_gradient(low = 'white', high = 'blue') +
+  ggplot(aes(x=year, y=mean_tmax_jan, group=id, color = id)) + 
+  geom_line() +
+  geom_point(alpha=.5) +
   labs(
     title = "Maximum temperature in Jan",
-    x = "Weather station id",
+    x = "Year",
     y = "Temperature degree (°C)",
-    caption = "Data from P8105 datasets")
+    caption = "Data from P8105 datasets") +
+  theme(legend.position = "none")
 
 july_tmax_p = 
   july_tmax %>% 
-  ggplot(aes(x=id, y=mean_tmax_july)) + 
-  geom_point(aes(color = year))  + 
-  scale_colour_gradient(low = 'white', high = 'red') +
+  ggplot(aes(x=year, y=mean_tmax_july, group=id, color = id)) + 
+  geom_line() +
+  geom_point(alpha=.5) +
   labs(
     title = "Maximum temperature in July",
-    x = "Weather station id",
+    x = "Year",
     y = "Temperature degree (°C)",
-    caption = "Data from P8105 datasets")
+    caption = "Data from P8105 datasets") +
+  theme(legend.position = "none")
 
 jan_tmax_p + july_tmax_p
 ```
-2. The scatterplots for maximum temperatures shows that most of the observed maximum temperature in January across all weather station is between -50 to 50 degree Celsius while the range is between 250 to 300 degree Celsius in July. Though outliers are hard to be visualized by the scatterplots above, they can be found by the boxplots in the below marked in blue and red.
+2. The spaghetti plots for maximum temperatures shows that most of the observed maximum temperature in January across all weather station is between -50 to 50 degree Celsius while the range is between 250 to 300 degree Celsius in July. Outliers could be found on the points which are above 100 and below -100 in the plot for Jan, points below 200 could be found in the plot for July.
 
-```{r boxplots, echo=FALSE, message=FALSE}
-jan_tmax_box = 
-  jan_tmax %>% 
-  ggplot(aes(x=id, y=mean_tmax_jan)) +
-  geom_boxplot(outlier.colour = "blue") 
-
-july_tmax_box =
-  july_tmax %>% 
-  ggplot(aes(x=id, y=mean_tmax_july)) +
-  geom_boxplot(outlier.colour = "red") 
-
-jan_tmax_box + july_tmax_box
-```
-```{r question_3, echo=FALSE, message=FALSE}
+```{r question_3, echo=FALSE, message=FALSE, warning=FALSE}
 tmax_tmin = 
   noaa_df %>% 
-  ggplot(aes(x=tmax, y=tmin)) + 
+  ggplot(aes(x=tmin, y=tmax)) + 
   geom_point(aes(color=year)) +
   labs(
     title = "Maximum temperature versus minimum temperature",
-    x = "Maximum temperature (°C)",
-    y = "Minimum temperature (°C)",
-    caption = "Data from P8105 datasets")
+    x = "Minimum temperature (°C)",
+    y = "Maximum temperature (°C)",
+    caption = "Data from P8105 datasets") +
+  theme(legend.position = "bottom")
 
 snow_den =
   noaa_df %>% 
@@ -181,9 +171,10 @@ snow_den =
     title = "Snowfall distribution across years",
     x = "Snowfall (mm)",
     y = "Density",
-    caption = "Data from P8105 datasets")
+    caption = "Data from P8105 datasets") +
+  theme(legend.position = "bottom")
 
-tmax_tmin / snow_den
+tmax_tmin + snow_den
 ```
 
 
