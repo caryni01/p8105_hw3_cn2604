@@ -67,7 +67,7 @@ instacart_df %>%
 
 
 # Problem 2
-```{r clean_file_1, echo=FALSE, message=FALSE}
+```{r clean_file_1, message=FALSE}
 acce_df = read.csv("./data/accel_data.csv") %>% 
   janitor::clean_names() %>% 
   pivot_longer(
@@ -97,7 +97,7 @@ day_df = acce_df %>%
 
 The dataframe after cleaning processes has `r ncol(acce_df)` variables and `r nrow(acce_df)` observations. It includes the week and day variables with an indication of either weekday or weekend. Each one minute interval is turned into a variable named activity_number and activity_counts is the new variable for original activity data.
 
-```{r show_table, echo=FALSE, message=FALSE}
+```{r show_table, message=FALSE}
 knitr::kable(day_df)
 ggplot(day_df, aes(x = day, y = total_activity, fill = week)) +
   geom_bar(stat = "identity") +
@@ -110,7 +110,7 @@ ggplot(day_df, aes(x = day, y = total_activity, fill = week)) +
 
 No apparent trend could be found by the table but the bar plot above suggests that Saturday has least total activity compared to other days of the week.
 
-```{r plot_heart_activity, echo=FALSE, message=FALSE}
+```{r plot_heart_activity, message=FALSE}
 acce_df %>% 
   ggplot(aes(x=activity_number, y=activity_counts, color = day)) + 
   geom_point(alpha = .5) + 
@@ -129,7 +129,7 @@ acce_df %>%
 The graph shows that the heart activity rates are highest between 10am to 12pm and 8pm to 10pm throughout the week. The patient seems to have more stable heart activity in Tuesday and Wednesday though he has reached his highest activity rate in Wednesday, which exceeds 7500 activity counts per minute. Overall, the patient maintains an activity rate way below 2500 per minute in most time of a day. 
 
 # Problem 3
-```{r load_file_2, echo=FALSE, message=FALSE}
+```{r load_file_2, message=FALSE}
 data("ny_noaa")
 ```
 
@@ -152,7 +152,7 @@ find_mode = function(v) {
 ```
 
 1. While most of the observations for snowfall are missing, `r find_mode(clean_snow)` mm is the most commonly seen value in the remaining observation. It is reasonable because snowfall is an occasional event in that area and no snow should be observed in normal days.
-```{r df_for_plot, echo=FALSE, message=FALSE}
+```{r df_for_plot, message=FALSE}
 jan_tmax = noaa_df %>% 
   filter( month == "01") %>% 
   select(id, year, tmax) %>% 
@@ -178,7 +178,7 @@ july_tmax = noaa_df %>%
   )
 
 ```
-```{r plots, echo=FALSE, message=FALSE}
+```{r plots, message=FALSE}
 jan_tmax_p = 
   jan_tmax %>% 
   ggplot(aes(x=year, y=mean_tmax_jan, group=id, color = id)) + 
@@ -208,7 +208,7 @@ jan_tmax_p / july_tmax_p
 
 2. The spaghetti plots for maximum temperatures shows that most of the observed maximum temperature in January across all weather station is between -50 to 50 degree Celsius while the range is between 250 to 300 degree Celsius in July. Outliers could be found on the points which are above 100 and below -100 in the plot for Jan, points below 200 could be found in the plot for July.
 
-```{r question_3, echo=FALSE, message=FALSE, warning=FALSE}
+```{r question_3, message=FALSE, warning=FALSE}
 tmax_tmin = 
   noaa_df %>% 
   ggplot(aes(x=tmin, y=tmax)) + 
@@ -234,5 +234,6 @@ snow_den =
 
 tmax_tmin + snow_den
 ```
+
 3. Figures above are tmax vs tmin for the full dataset and snowfall distribution between 0 to 100 mm across the years.
 
