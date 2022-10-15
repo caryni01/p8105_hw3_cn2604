@@ -143,7 +143,7 @@ noaa_df = ny_noaa %>%
     tmin = as.numeric(tmin)
   )
 
-clean_snow = na.omit(noaa_df$snow_mm)
+clean_snow = na.omit(pull(noaa_df,snow_mm))
 find_mode = function(v) {
  uniqv = unique(v)
  uniqv[which.max(tabulate(match(v, uniqv)))]
@@ -235,5 +235,5 @@ snow_den =
 tmax_tmin + snow_den
 ```
 
-3. Figures above are tmax vs tmin for the full dataset and snowfall distribution between 0 to 100 mm across the years.
+3. Two figures above are tmax vs tmin for the full dataset and snowfall distribution between 0 to 100 mm across the years.
 
