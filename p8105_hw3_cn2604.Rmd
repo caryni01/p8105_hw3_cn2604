@@ -189,7 +189,7 @@ jan_tmax_p =
     x = "Year",
     y = "Temperature degree (°C)",
     caption = "Data from P8105 datasets") +
-  theme(legend.position = "none")
+  theme(legend.position = "none") 
 
 july_tmax_p = 
   july_tmax %>% 
@@ -201,9 +201,9 @@ july_tmax_p =
     x = "Year",
     y = "Temperature degree (°C)",
     caption = "Data from P8105 datasets") +
-  theme(legend.position = "none")
+  theme(legend.position = "none") 
 
-jan_tmax_p + july_tmax_p
+jan_tmax_p / july_tmax_p
 ```
 
 2. The spaghetti plots for maximum temperatures shows that most of the observed maximum temperature in January across all weather station is between -50 to 50 degree Celsius while the range is between 250 to 300 degree Celsius in July. Outliers could be found on the points which are above 100 and below -100 in the plot for Jan, points below 200 could be found in the plot for July.
@@ -218,7 +218,7 @@ tmax_tmin =
     x = "Minimum temperature (°C)",
     y = "Maximum temperature (°C)",
     caption = "Data from P8105 datasets") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") 
 
 snow_den =
   noaa_df %>% 
@@ -230,7 +230,7 @@ snow_den =
     x = "Snowfall (mm)",
     y = "Density",
     caption = "Data from P8105 datasets") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") 
 
 tmax_tmin + snow_den
 ```
