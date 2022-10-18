@@ -134,7 +134,7 @@ data("ny_noaa")
 ```
 
 The raw dataframe of ny_noaa has `r ncol(ny_noaa)` variables and `r nrow(ny_noaa)` observations. It has weather station id, date of observation, precipitation, snowfall, snow depth, and maximum and minimum temperatures. For data of precipitation, snowfall, and snow depth, there are `r sum(is.na(ny_noaa$prcp))`, `r sum(is.na(ny_noaa$snow))`, `r sum(is.na(ny_noaa$snwd))` missing values. For tmax and tmin, `r sum(is.na(ny_noaa$tmax))` and `r sum(is.na(ny_noaa$tmin))` of the observations are missing, which loss about a half of helpful information for further analysis. 
-```{r clean_file_2, echo=FALSE, message=FALSE}
+```{r clean_file_2, message=FALSE}
 noaa_df = ny_noaa %>% 
   separate(date, into = c("year", "month", "day"), sep = '-') %>% 
   rename(c("prcp_mm" = "prcp", "snow_mm" = "snow", "snwd_mm" = "snwd")) %>% 
